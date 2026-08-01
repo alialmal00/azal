@@ -1,0 +1,123 @@
+/* src/styles/global.css */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  font-family: 'Vazirmatn', 'IRANSans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  direction: rtl;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* تمام المان‌ها */
+div, span, p, a, li, td, th, label, caption, legend,
+h1, h2, h3, h4, h5, h6,
+button, input, select, textarea, option,
+table, thead, tbody, tr, th, td,
+header, footer, section, article, nav, aside,
+main, form, fieldset, blockquote, pre, code {
+  font-family: 'Vazirmatn', 'IRANSans', 'Segoe UI', sans-serif !important;
+}
+
+/* وزن‌های مختلف */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700 !important;
+}
+
+p, span, div, li {
+  font-weight: 400 !important;
+}
+
+/* دکمه‌ها */
+button, .btn, .action-btn, .nav-btn, .tab-btn {
+  font-family: 'Vazirmatn', 'IRANSans', sans-serif !important;
+  font-weight: 500 !important;
+}
+
+/* ورودی‌ها */
+input, textarea, select, .input-field, .search-input {
+  font-family: 'Vazirmatn', 'IRANSans', sans-serif !important;
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* اسکرول بار */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* کلاس‌های کمکی */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.persian-numbers {
+  font-feature-settings: "ss01";
+}
+
+.tabular-numbers {
+  font-feature-settings: "tnum", "ss01";
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  body, html {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}

@@ -1,0 +1,632 @@
+/* src/styles/joinClass.css - نسخه کاملاً جدید و زیبا */
+
+/* ========================================
+   متغیرها
+   ======================================== */
+:root {
+  --join-primary: #2563eb;
+  --join-primary-dark: #1d4ed8;
+  --join-primary-light: #60a5fa;
+  --join-success: #10b981;
+  --join-success-dark: #059669;
+  --join-warning: #f59e0b;
+  --join-danger: #ef4444;
+  --join-purple: #8b5cf6;
+  --join-pink: #ec4899;
+  --join-indigo: #6366f1;
+  
+  --join-gray-50: #f9fafb;
+  --join-gray-100: #f3f4f6;
+  --join-gray-200: #e5e7eb;
+  --join-gray-300: #d1d5db;
+  --join-gray-400: #9ca3af;
+  --join-gray-500: #6b7280;
+  --join-gray-600: #4b5563;
+  --join-gray-700: #374151;
+  --join-gray-800: #1f2937;
+  --join-gray-900: #111827;
+  
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  --gradient-card: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.4);
+  --shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+/* ========================================
+   کانتینر اصلی
+   ======================================== */
+.join-class-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  direction: rtl;
+  font-family: 'Vazirmatn', 'IRANSans', sans-serif;
+  padding: 2rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.join-class-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ========================================
+   هدر
+   ======================================== */
+.join-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.join-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.join-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+/* ========================================
+   کارت اصلی
+   ======================================== */
+.join-main-card {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-2xl);
+  animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.join-card-header {
+  background: var(--gradient-primary);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.join-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: white;
+  border-radius: 50% 50% 0 0;
+}
+
+.join-icon-circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  backdrop-filter: blur(4px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+  }
+}
+
+.join-icon-circle svg {
+  color: white;
+}
+
+.join-card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.join-card-header p {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.join-card-body {
+  padding: 2rem;
+}
+
+/* ========================================
+   پیام وضعیت
+   ======================================== */
+.status-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  animation: slideInRight 0.4s ease;
+  font-weight: 500;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.status-alert.success {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  border-right: 4px solid #10b981;
+}
+
+.status-alert.error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #991b1b;
+  border-right: 4px solid #ef4444;
+}
+
+.status-alert.info {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #1e40af;
+  border-right: 4px solid #2563eb;
+}
+
+/* ========================================
+   ورودی کد کلاس - طراحی خاص
+   ======================================== */
+.code-input-container {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.code-input-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--join-gray-700);
+  margin-bottom: 0.5rem;
+}
+
+.code-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.code-input-prefix {
+  position: absolute;
+  right: 1rem;
+  color: var(--join-gray-400);
+  font-family: monospace;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+.code-input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 1rem;
+  font-size: 1.2rem;
+  font-family: monospace;
+  letter-spacing: 3px;
+  text-align: center;
+  border: 2px solid var(--join-gray-200);
+  border-radius: 1rem;
+  background: var(--join-gray-50);
+  transition: all 0.3s ease;
+  direction: ltr;
+}
+
+.code-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.code-input-hint {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--join-gray-400);
+}
+
+/* ========================================
+   دکمه پیوستن
+   ======================================== */
+.join-action-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.join-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.join-action-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.join-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.join-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================================
+   بخش اطلاعات
+   ======================================== */
+.join-info-box {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 1rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.join-info-box p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #92400e;
+  margin: 0;
+}
+
+/* ========================================
+   بخش کلاس‌های من
+   ======================================== */
+.my-classes-section {
+  max-width: 800px;
+  margin: 2rem auto 0;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  background: var(--join-gray-800);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-header svg {
+  color: #60a5fa;
+}
+
+.section-header h3 {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.classes-grid {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.class-item-card {
+  background: var(--join-gray-50);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  border: 1px solid var(--join-gray-200);
+  cursor: pointer;
+}
+
+.class-item-card:hover {
+  transform: translateX(-5px);
+  border-color: #667eea;
+  box-shadow: var(--shadow-md);
+}
+
+.class-item-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.class-avatar {
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-primary);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.class-details h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--join-gray-800);
+  margin-bottom: 0.25rem;
+}
+
+.class-details .class-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.7rem;
+  color: var(--join-gray-500);
+}
+
+.class-details .class-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.enter-class-btn {
+  background: var(--join-gray-200);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  color: var(--join-gray-600);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.enter-class-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* ========================================
+   حالت خالی
+   ======================================== */
+.empty-state-card {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-icon-box {
+  width: 80px;
+  height: 80px;
+  background: var(--join-gray-100);
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: var(--join-gray-400);
+}
+
+.empty-state-card h4 {
+  font-size: 1rem;
+  color: var(--join-gray-700);
+  margin-bottom: 0.25rem;
+}
+
+.empty-state-card p {
+  font-size: 0.8rem;
+  color: var(--join-gray-500);
+}
+
+/* ========================================
+   اسپینر
+   ======================================== */
+.spinner-circle {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-md {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--join-gray-200);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   اسکرول بار سفارشی
+   ======================================== */
+.classes-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.classes-grid::-webkit-scrollbar-track {
+  background: var(--join-gray-100);
+  border-radius: 10px;
+}
+
+.classes-grid::-webkit-scrollbar-thumb {
+  background: var(--join-gray-300);
+  border-radius: 10px;
+}
+
+.classes-grid::-webkit-scrollbar-thumb:hover {
+  background: #667eea;
+}
+
+/* ========================================
+   ریسپانسیو
+   ======================================== */
+@media (max-width: 768px) {
+  .join-class-wrapper {
+    padding: 1rem;
+  }
+  
+  .join-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .join-card-header {
+    padding: 1.5rem;
+  }
+  
+  .join-icon-circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .join-card-body {
+    padding: 1.5rem;
+  }
+  
+  .code-input {
+    font-size: 1rem;
+    padding: 0.875rem 2.5rem 0.875rem 1rem;
+  }
+  
+  .class-item-card {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .class-item-info {
+    flex-direction: column;
+  }
+  
+  .enter-class-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .class-details .class-meta {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .join-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .join-header p {
+    font-size: 0.8rem;
+  }
+  
+  .join-card-header h2 {
+    font-size: 1.2rem;
+  }
+}

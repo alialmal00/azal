@@ -1,0 +1,214 @@
+/* styles/exam-config.css - استایل اختصاصی فرم ساخت آزمون */
+
+.exam-config-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.exam-config-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 32px;
+}
+
+.exam-config-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.exam-config-subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 32px;
+}
+
+.exam-config-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 0.875rem;
+}
+
+.exam-config-section {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.exam-config-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exam-config-source-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.exam-config-source-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+
+.exam-config-source-btn.active {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.exam-config-source-btn.inactive {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.exam-config-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.exam-config-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* اصلاح آیکون آپلود - اندازه ثابت و عدم بزرگ شدن */
+.exam-config-upload-area {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.exam-config-upload-area:hover {
+  border-color: #2563eb;
+  background: #f1f5f9;
+}
+
+.upload-icon {
+  width: 48px !important;
+  height: 48px !important;
+  margin: 0 auto 12px;
+  color: #9ca3af;
+  display: block;
+}
+
+.exam-config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.exam-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exam-config-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.exam-config-select,
+.exam-config-input {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  background: white;
+  transition: all 0.2s;
+}
+
+.exam-config-select:focus,
+.exam-config-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.exam-config-time-hint {
+  font-size: 0.75rem;
+  color: #64748b;
+  background: #eff6ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* اصلاح فاصله دکمه از بخش بالایی */
+.exam-config-submit-btn {
+  width: 100%;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 24px;
+}
+
+.exam-config-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.exam-config-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .exam-config-card {
+    padding: 20px;
+  }
+  
+  .exam-config-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .upload-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}

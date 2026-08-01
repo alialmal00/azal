@@ -1,0 +1,62 @@
+/* src/styles/fonts.css */
+
+@font-face {
+  font-family: 'AradVF';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../assets/fonts/woff2/AradVF.woff2') format('woff2');
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: 'Arad';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../assets/fonts/woff2/Arad-Regular.woff2') format('woff2');
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: 'Arad';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../assets/fonts/woff2/Arad-Medium.woff2') format('woff2');
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: 'Arad';
+  font-style: normal;
+  font-weight: bold;
+  src: url('../assets/fonts/woff2/Arad-Bold.woff2') format('woff2');
+  font-display: fallback;
+}
+
+/* کلاس‌های کمکی برای ویژگی‌های فونت */
+.persian-digits {
+  font-feature-settings: "ss01";
+}
+
+.swash-kaf-gaf {
+  font-feature-settings: "ss02";
+}
+
+.reversed-yeh {
+  font-feature-settings: "ss03";
+}
+
+.currency-symbols {
+  font-feature-settings: "ss04";
+}
+
+.ui-numbers-symbols {
+  font-feature-settings: "ss05";
+}
+
+.tabular-numbers {
+  font-feature-settings: "tnum";
+}
+
+.swash {
+  font-feature-settings: "swsh";
+}

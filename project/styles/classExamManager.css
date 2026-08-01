@@ -1,0 +1,1266 @@
+/* src/styles/classExamManager.css */
+
+/* ========== کانتینر اصلی ========== */
+.exam-manager-container {
+  padding: 16px;
+  direction: rtl;
+}
+
+/* ========== تب‌ها ========== */
+.exam-tabs {
+  display: flex;
+  gap: 10px;
+  background: white;
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  background: #f1f5f9;
+}
+
+.tab-btn.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* ========== هدر بخش ========== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.btn-create {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.btn-create:hover:not(.disabled) {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.btn-create.disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-create.disabled:hover {
+  background: #94a3b8;
+  transform: none;
+}
+
+/* ========== بنر محدودیت‌های معلم ========== */
+.teacher-limits-banner {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.teacher-limits-banner .limit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.teacher-limits-banner .limit-item strong {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.teacher-limits-banner .limit-item .warning {
+  color: #ef4444;
+}
+
+.teacher-limits-banner .limit-item .success {
+  color: #10b981;
+}
+
+.teacher-limits-banner .limit-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid #fecaca;
+  flex-wrap: wrap;
+}
+
+.teacher-limits-banner .limit-warning svg {
+  flex-shrink: 0;
+}
+
+.upgrade-btn-small {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.upgrade-btn-small:hover {
+  background: #dc2626;
+  transform: scale(1.02);
+}
+
+/* ========== لیست آزمون‌ها ========== */
+.exams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exam-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.exam-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.exam-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.exam-card-header h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.exam-card-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badge.published {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.draft {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.archived {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.exam-card-stats {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.exam-card-stats span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.exam-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-publish,
+.btn-results,
+.btn-delete,
+.btn-edit {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-publish {
+  background: #10b981;
+  color: white;
+}
+
+.btn-publish:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.btn-results {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-results:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.btn-edit {
+  background: #8b5cf6;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+}
+
+/* ========== حالت خالی ========== */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 14px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.limit-text {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* ========== مودال‌ها ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.exam-modal-large,
+.results-modal {
+  background: white;
+  border-radius: 24px;
+  width: 95%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.results-modal {
+  max-width: 650px;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  border-radius: 24px 24px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.modal-header button:hover {
+  background: #f1f5f9;
+  color: #ef4444;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 12px;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-radius: 0 0 24px 24px;
+}
+
+/* ========== مودال محدودیت‌ها ========== */
+.modal-limits-info {
+  display: flex;
+  gap: 20px;
+  padding: 10px 16px;
+  background: #eff6ff;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: #1e40af;
+  flex-wrap: wrap;
+}
+
+.modal-limits-info strong {
+  font-weight: 700;
+}
+
+/* ========== خطاها ========== */
+.error-box {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border-right: 4px solid #ef4444;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.error-box svg {
+  color: #ef4444;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.error-box strong {
+  display: block;
+  color: #991b1b;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.error-box p {
+  margin: 0;
+  color: #7f1d1d;
+  font-size: 0.8rem;
+}
+
+/* ========== حالت لودینگ ========== */
+.generating-overlay {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.generating-overlay .spinner {
+  margin: 0 auto 20px;
+}
+
+.generating-overlay p {
+  font-size: 1rem;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.generating-hint {
+  font-size: 0.75rem !important;
+  color: #94a3b8 !important;
+  margin-top: 8px;
+}
+
+/* ========== اسپینر ========== */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== ویرایشگر آزمون ========== */
+.exam-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.exam-info-section {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.edit-exam-body {
+  display: flex;
+  gap: 20px;
+  min-height: 400px;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.edit-sidebar {
+  width: 350px;
+  background: #f8fafc;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.questions-list-header {
+  padding: 12px 16px;
+  background: #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1e293b;
+  flex-shrink: 0;
+}
+
+.add-question-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.add-question-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: scale(1.02);
+}
+
+.add-question-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.questions-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.question-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.question-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.question-item.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.q-num {
+  width: 28px;
+  height: 28px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.question-item.active .q-num {
+  background: #2563eb;
+  color: white;
+}
+
+.q-preview {
+  flex: 1;
+  font-size: 0.8rem;
+  color: #475569;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.question-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.question-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #94a3b8;
+  transition: all 0.2s;
+}
+
+.question-actions button:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.question-actions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.edit-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.question-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========== فرم‌ها ========== */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* ========== ویرایشگر گزینه‌ها ========== */
+.options-editor {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.options-editor > label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.option-letter {
+  width: 30px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.option-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  min-width: 100px;
+}
+
+.option-row input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.correct-btn {
+  padding: 4px 12px;
+  background: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  transition: all 0.2s;
+  color: #475569;
+}
+
+.correct-btn:hover {
+  background: #cbd5e1;
+}
+
+.correct-btn.active {
+  background: #10b981;
+  color: white;
+}
+
+.correct-btn.active:hover {
+  background: #059669;
+}
+
+.remove-option {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.remove-option:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.add-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #e2e8f0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: #475569;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.add-option-btn:hover {
+  background: #cbd5e1;
+}
+
+/* ========== دکمه‌های مودال ========== */
+.btn-cancel {
+  flex: 1;
+  padding: 10px;
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #cbd5e1;
+}
+
+.btn-save {
+  flex: 1;
+  padding: 10px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-save:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.btn-close {
+  flex: 1;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: #1d4ed8;
+}
+
+/* ========== نتایج آزمون ========== */
+.results-stats {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #f1f5f9;
+  flex-wrap: wrap;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.results-stats .stat-item {
+  flex: 1;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+.results-stats .stat-item span {
+  display: block;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.results-stats .stat-item strong {
+  display: block;
+  font-size: 1.2rem;
+  margin-top: 4px;
+  color: #1e293b;
+}
+
+.results-list {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.results-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.results-list th,
+.results-list td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.results-list th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
+
+.results-list td.success {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.results-list td.danger {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.empty-results {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+/* ========== توست پیام ========== */
+.exam-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1100;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.exam-toast.success {
+  background: #10b981;
+  color: white;
+}
+
+.exam-toast.error {
+  background: #ef4444;
+  color: white;
+}
+
+.exam-toast button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.exam-toast button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.exam-loading {
+  text-align: center;
+  padding: 40px;
+}
+
+/* ========== پیش‌نمایش موفق ========== */
+.preview-success {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.preview-success svg {
+  color: #10b981;
+  margin-bottom: 12px;
+}
+
+.preview-success h4 {
+  margin: 0;
+  color: #065f46;
+}
+
+.preview-info {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.preview-info p {
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+
+.preview-info strong {
+  color: #1e293b;
+  width: 100px;
+  display: inline-block;
+}
+
+/* ========== به زودی ========== */
+.coming-soon {
+  text-align: center;
+  padding: 30px;
+  margin-top: 20px;
+  background: #fef3c7;
+  border-radius: 14px;
+  color: #92400e;
+}
+
+.coming-soon-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.coming-soon-hint {
+  font-size: 0.7rem !important;
+  color: #94a3b8 !important;
+  margin-top: 8px;
+}
+
+/* ========== اسکرول بار ========== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========== ریسپانسیو ========== */
+@media (max-width: 1024px) {
+  .exam-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .edit-exam-body {
+    flex-direction: column;
+  }
+  
+  .edit-sidebar {
+    width: 100%;
+    max-height: 250px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .exam-modal-large {
+    width: 98%;
+  }
+  
+  .results-stats {
+    flex-direction: column;
+  }
+  
+  .option-row {
+    flex-wrap: wrap;
+  }
+  
+  .teacher-limits-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .exam-card-actions {
+    flex-direction: column;
+  }
+  
+  .exam-card-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .exam-container {
+    padding: 8px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .btn-create {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .exam-card-header {
+    flex-direction: column;
+  }
+  
+  .exam-card-stats {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .modal-header {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .results-stats .stat-item {
+    flex: 1 1 100%;
+  }
+  
+  .teacher-limits-banner .limit-item {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .teacher-limits-banner .limit-warning {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-modal-large {
+    padding: 0;
+    border-radius: 16px;
+  }
+  
+  .modal-body {
+    padding: 12px;
+  }
+  
+  .modal-header {
+    padding: 12px 16px;
+  }
+  
+  .modal-footer {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .question-item {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
+  
+  .q-preview {
+    font-size: 0.7rem;
+  }
+  
+  .question-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .option-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .option-letter {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .correct-btn {
+    flex: 1;
+  }
+  
+  .exam-toast {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    font-size: 0.8rem;
+    padding: 10px 16px;
+  }
+}
