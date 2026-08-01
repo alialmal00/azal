@@ -1,7 +1,7 @@
 // controllers/classController.js
 const db = require('../config/db');
 const crypto = require('crypto');
-const UsageCounter = require('../models/UsageCounter');
+const subscriptionService = require('../services/subscriptionService');
 
 // ========== تابع کمکی برای تولید کد کلاس ==========
 const generateClassCode = () => {
@@ -545,12 +545,30 @@ const createClass = async (req, res) => {
         console.log('✅ Teacher added to class members');
 
         // ============================================
-        // 🔹 افزایش شمارنده کلاس‌های ساخته‌شده
+        // 🔹 مصرف سهمیه کلاس — اتمیک از طریق سرویس مرکزی
         // ============================================
-        await UsageCounter.incrementClassUsage(teacherId);
+        let consumed = null;
+        try {
+            consumed = await subscriptionService.consumeMetered(teacherId, 'class_create', 1);
+        } catch (consumeError) {
+            // شکست در شمارش → کلاس تازه‌ساخته پاک شود تا سیستم Sync بماند
+            await db.query('DELETE FROM classes WHERE id = $1', [newClass.id]);
+            throw consumeError;
+        }
+
+        if (consumed && !consumed.allowed) {
+            await db.query('DELETE FROM classes WHERE id = $1', [newClass.id]);
+            return res.status(429).json({
+                success: false,
+                message: consumed.message,
+                error: 'CLASS_LIMIT_REACHED',
+                limit: { used: consumed.used, max: consumed.limit },
+                redirect: '/dashboard/subscription'
+            });
+        }
 
         // دریافت مجدد مصرف برای نمایش در پاسخ
-        const updatedUsage = await UsageCounter.getCurrentUsage(teacherId);
+        const updatedUsage = await subscriptionService.getUsage(teacherId);
         const plan = req.plan || { max_classes: 1 };
 
         // ✅ پاسخ موفق
@@ -735,7 +753,52 @@ const joinClassByCode = async (req, res) => {
             'SELECT * FROM class_members WHERE class_id = $1 AND user_id = $2',
             [classData.id, userId]
         );
-        
+
+        // ============================================
+        // 🛡️ سقف ظرفیت کلاس بر اساس پلن معلم (از سرویس مرکزی)
+        // ============================================
+        if (!(existingMember.rows.length > 0 && existingMember.rows[0].status === 'active')) {
+            const membersCountR = await db.query(
+                `SELECT COUNT(*) AS c FROM class_members
+                 WHERE class_id = $1 AND role = 'student' AND status = 'active'`,
+                [classData.id]
+            );
+            const currentStudents = parseInt(membersCountR.rows[0].c, 10) || 0;
+            const capCheck = await subscriptionService.checkLimit(userId, 'class_students_per_class', {
+                capValue: currentStudents + 1,
+                limitOwner: classData.teacher_id
+            });
+            if (!capCheck.allowed) {
+                return res.status(429).json({
+                    success: false,
+                    message: `ظرفیت این کلاس تکمیل است (سقف پلن معلم: ${capCheck.limit} دانش‌آموز).`,
+                    error: 'CLASS_FULL'
+                });
+            }
+
+            // ============================================
+            // 🛡️ سقف تعداد کلاس‌های قابل عضویت بر اساس پلن دانش‌آموز
+            // ============================================
+            const myMembershipsR = await db.query(
+                `SELECT COUNT(DISTINCT c.id) AS c
+                 FROM class_members cm JOIN classes c ON c.id = cm.class_id
+                 WHERE cm.user_id = $1 AND cm.status = 'active' AND c.status = 'active'`,
+                [userId]
+            );
+            const myMemberships = parseInt(myMembershipsR.rows[0].c, 10) || 0;
+            const membershipCheck = await subscriptionService.checkLimit(userId, 'class_membership', {
+                capValue: myMemberships + 1
+            });
+            if (!membershipCheck.allowed) {
+                return res.status(429).json({
+                    success: false,
+                    message: membershipCheck.message || 'سقف تعداد کلاس‌های قابل عضویت در پلن شما کامل شده است. اشتراک خود را ارتقا دهید.',
+                    error: 'MEMBERSHIP_LIMIT_REACHED',
+                    redirect: '/dashboard/subscription'
+                });
+            }
+        }
+
         if (existingMember.rows.length > 0) {
             const member = existingMember.rows[0];
             if (member.status === 'active') {
@@ -841,7 +904,49 @@ const acceptInvitation = async (req, res) => {
         }
         
         const invitation = inviteResult.rows[0];
-        
+
+        // ============================================
+        // 🛡️ سقف ظرفیت کلاس + سقف عضویت دانش‌آموز (سرویس مرکزی)
+        // ============================================
+        const classR = await db.query('SELECT teacher_id FROM classes WHERE id = $1', [invitation.class_id]);
+        const teacherId = classR.rows[0]?.teacher_id;
+
+        if (teacherId) {
+            const countR = await db.query(
+                `SELECT COUNT(*) AS c FROM class_members WHERE class_id = $1 AND role = 'student' AND status = 'active'`,
+                [invitation.class_id]
+            );
+            const capCheck = await subscriptionService.checkLimit(userId, 'class_students_per_class', {
+                capValue: (parseInt(countR.rows[0].c, 10) || 0) + 1,
+                limitOwner: teacherId
+            });
+            if (!capCheck.allowed) {
+                return res.status(429).json({
+                    success: false,
+                    message: 'ظرفیت این کلاس تکمیل است. با معلم خود تماس بگیرید.',
+                    error: 'CLASS_FULL'
+                });
+            }
+        }
+
+        const myMembershipsR = await db.query(
+            `SELECT COUNT(DISTINCT c.id) AS c
+             FROM class_members cm JOIN classes c ON c.id = cm.class_id
+             WHERE cm.user_id = $1 AND cm.status = 'active' AND c.status = 'active'`,
+            [userId]
+        );
+        const membershipCheck = await subscriptionService.checkLimit(userId, 'class_membership', {
+            capValue: (parseInt(myMembershipsR.rows[0].c, 10) || 0) + 1
+        });
+        if (!membershipCheck.allowed) {
+            return res.status(429).json({
+                success: false,
+                message: membershipCheck.message || 'سقف تعداد کلاس‌های قابل عضویت در پلن شما کامل شده است.',
+                error: 'MEMBERSHIP_LIMIT_REACHED',
+                redirect: '/dashboard/subscription'
+            });
+        }
+
         await db.query(
             `INSERT INTO class_members (class_id, user_id, role, status) 
              VALUES ($1, $2, $3, $4)

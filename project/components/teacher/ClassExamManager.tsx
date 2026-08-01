@@ -141,7 +141,9 @@ const ClassExamManager: React.FC<ClassExamManagerProps> = ({ classId, className,
     setErrorDetail(null);
     
     try {
-      const response = await generateExam(config);
+      // ⚠️ skipAutoSave: ذخیره/شمارش سهمیه فقط از مسیر /class-exams/exam/create
+      // انجام می‌شود تا سهمیه معلم دو بار مصرف نشود
+      const response = await generateExam(config, { skipAutoSave: true });
       setGeneratedExam(response);
       setEditingQuestions(JSON.parse(JSON.stringify(response.exam.questions || [])));
       setExamTitle(response.exam.title || '');

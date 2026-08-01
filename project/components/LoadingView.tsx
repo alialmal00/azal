@@ -53,9 +53,18 @@ const LoadingView: React.FC = () => {
       });
     }, 800);
 
+    // ⏱️ حداکثر ۴ ثانیه — جلوگیری از گیر کردن لودینگ
+    const maxTimeout = setTimeout(() => {
+      clearInterval(stepInterval);
+      clearInterval(progressInterval);
+      setProgress(100);
+      setCurrentStep(steps.length - 1);
+    }, 4000);
+
     return () => {
       clearInterval(stepInterval);
       clearInterval(progressInterval);
+      clearTimeout(maxTimeout);
     };
   }, []);
 

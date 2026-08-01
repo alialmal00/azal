@@ -8,6 +8,7 @@ import {
   FiCalendar, FiArrowLeft, FiCheckCircle, FiXCircle, FiInfo
 } from 'react-icons/fi';
 import { AuthContext } from '../../index';
+import { useEntitlements } from '../../context/EntitlementsContext';
 import api from '../../services/api';
 
 // ==================== Types ====================
@@ -103,6 +104,8 @@ const SubscriptionPage: React.FC = () => {
   const [selectedDuration, setSelectedDuration] = useState<Record<number, string>>({});
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  // 🏛️ تازه‌سازی Entitlements مرکزی بعد از خرید/لغو
+  const { refresh: refreshEntitlements } = useEntitlements();
 
   // ==================== Load Data ====================
   useEffect(() => {
@@ -195,7 +198,7 @@ const SubscriptionPage: React.FC = () => {
       const response = await api.post('/subscription/purchase', { planId, duration });
       if (response.data.success) {
         setMessage({ type: 'success', text: response.data.message || '✅ اشتراک با موفقیت فعال شد!' });
-        await loadAllData();
+        await Promise.all([loadAllData(), refreshEntitlements()]);
       } else {
         setMessage({ type: 'error', text: response.data.message || 'خطا در خرید اشتراک' });
       }
@@ -215,7 +218,7 @@ const SubscriptionPage: React.FC = () => {
       if (response.data.success) {
         setMessage({ type: 'success', text: 'اشتراک شما با موفقیت لغو شد' });
         setShowCancelConfirm(false);
-        await loadAllData();
+        await Promise.all([loadAllData(), refreshEntitlements()]);
       }
     } catch (error: any) {
       setMessage({ type: 'error', text: error.response?.data?.message || 'خطا در لغو اشتراک' });

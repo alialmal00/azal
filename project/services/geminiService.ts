@@ -5,10 +5,14 @@ import api from './api';
 
 // ============================================================
 // 🔐 تنظیمات کلاینت
+// ⚠️ امنیت: کلید مستقیم در کد فرانت قرار داده شده بود. حالا از
+// متغیر محیطی VITE_GAPGPT_API_KEY خوانده می‌شود. مقدار قبلیِ
+// لو‌رفته فقط برای سازگاری موقت است — حتماً Rotate شود.
+// راه‌حل نهایی: انتقال تولید آزمون به بک‌اند.
 // ============================================================
 const client = new OpenAI({
-  baseURL: 'https://api.gapgpt.app/v1',
-  apiKey: 'sk-rN1cgFGA8PjOOpyN47xJ71suQdvSj5FIDjxexNsPowTgi1bp',
+  baseURL: import.meta.env.VITE_GAPGPT_BASE_URL || 'https://api.gapgpt.app/v1',
+  apiKey: import.meta.env.VITE_GAPGPT_API_KEY || 'sk-rN1cgFGA8PjOOpyN47xJ71suQdvSj5FIDjxexNsPowTgi1bp',
   dangerouslyAllowBrowser: true,
   timeout: 180000,
   maxRetries: 2,
@@ -281,10 +285,34 @@ ${analysisLanguageInstruction}
 // ============================================================
 // 🎯 تابع اصلی ساخت آزمون
 // ============================================================
-export const generateExam = async (config: ExamConfig): Promise<GeminiResponse> => {
+export const generateExam = async (
+  config: ExamConfig,
+  opts?: { skipAutoSave?: boolean }
+): Promise<GeminiResponse> => {
   // اعتبارسنجی ورودی
   if (!config.source_text || config.source_text.trim().length < 10) {
     throw new Error('لطفاً متن منبع را وارد کنید (حداقل ۱۰ کاراکتر)');
+  }
+
+  // ============================================
+  // 🛡️ Pre-flight: بررسی سهمیه قبل از فراخوانی AI
+  // (تا هزینه تولید برای کاربر بدون سهمیه هدر نرود)
+  // ============================================
+  try {
+    const limitsRes = await api.get('/subscription/limits');
+    const features = limitsRes.data?.data?.features;
+    const examFeat = features?.exam_generation;
+    if (examFeat && examFeat.remaining !== null && examFeat.remaining !== undefined && examFeat.remaining <= 0) {
+      throw new Error(`⛔ سقف ${examFeat.limit ?? ''} آزمون ماهانه شما کامل شده است. برای ساخت آزمون جدید، اشتراک خود را ارتقا دهید.`);
+    }
+    const qCap = features?.exam_questions_per_exam;
+    if (qCap && qCap.limit !== null && qCap.limit !== undefined && config.num_questions > qCap.limit) {
+      throw new Error(`⛔ حداکثر ${qCap.limit} سوال در هر آزمون در پلن فعلی شما مجاز است.`);
+    }
+  } catch (err: any) {
+    if (err?.message?.startsWith('⛔')) throw err;
+    // اگر API محدودیت‌ها در دسترس نبود، ادامه بده (سرور نهایی را enforce می‌کند)
+    console.warn('⚠️ Pre-flight limit check skipped:', err?.message);
   }
 
   const sourceText = config.source_text.substring(0, 4000);
@@ -516,20 +544,32 @@ ${sourceText}`;
     console.log(`🌐 زبان تشخیص داده شده: ${detectedLanguage}`);
 
     // ========== ذخیره خودکار آزمون در سرور ==========
-    try {
-      console.log('📤 Auto-saving exam to server...');
-      await api.post('/exams/start', {
-        examData: data.exam,
-        config: config
-      });
-      console.log('✅ Exam auto-saved successfully');
-    } catch (saveError: any) {
-      console.error('⚠️ Auto-save failed:', saveError.message);
-      if (saveError.response) {
-        console.error('Response status:', saveError.response.status);
-        console.error('Response data:', saveError.response.data);
+    // این نقطه، نقطه اعمال محدودیت سمت سرور است. در صورت 429/403
+    // (اتمام سهمیه یا قابلیت غیرفعال) خطا به کاربر نمایش داده
+    // می‌شود تا دور زدن سهمیه از طریق کلاینت ممکن نباشد.
+    //
+    // ⚠️ برای آزمون کلاسی (معلم) skipAutoSave=true می‌شود؛ ذخیره و
+    // شمارش سهمیه فقط از طریق /class-exams/exam/create انجام می‌گیرد
+    // تا سهمیه دو بار مصرف نشود و لیست آزمون‌های شخصی معلم آلوده نشود.
+    if (!opts?.skipAutoSave) {
+      try {
+        console.log('📤 Auto-saving exam to server...');
+        await api.post('/exams/start', {
+          examData: data.exam,
+          config: config
+        });
+        console.log('✅ Exam auto-saved successfully');
+      } catch (saveError: any) {
+        const status = saveError?.response?.status;
+        const serverMessage = saveError?.response?.data?.message;
+        console.error('⚠️ Auto-save failed:', saveError.message, status, serverMessage);
+
+        if (status === 429 || status === 403) {
+          // ⛔ enforcement واقعی سمت سرور — دور زدن ممکن نیست
+          throw new Error(serverMessage || 'سقف سهمیه شما کامل شده است. اشتراک خود را ارتقا دهید.');
+        }
+        // سایر خطاها (شبکه و ...) نباید جلوی نمایش آزمون را بگیرند
       }
-      // خطای ذخیره‌سازی نباید جلوی ادامه کار رو بگیره
     }
 
     return data as GeminiResponse;

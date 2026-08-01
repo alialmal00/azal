@@ -18,6 +18,7 @@ import './styles/advisor.css';
 import './styles/pdf-preview.css';
 
 import api from './services/api';
+import { EntitlementsProvider } from './context/EntitlementsContext';
 
 // ==================== Pages ====================
 import Landing from './pages/Landing';
@@ -86,6 +87,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const authCheckDoneRef = React.useRef(false);
 
   const checkAuth = React.useCallback(async () => {
     setLoading(true);
@@ -304,6 +306,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   // 🔄 چک کردن احراز هویت در شروع
   // ============================================
   React.useEffect(() => {
+    if (authCheckDoneRef.current) return;
+    authCheckDoneRef.current = true;
     checkAuth();
   }, [checkAuth]);
 
@@ -410,6 +414,7 @@ const RootApp = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <EntitlementsProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
@@ -520,6 +525,7 @@ const RootApp = () => {
             }
           />
         </Routes>
+        </EntitlementsProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -323,23 +323,6 @@ const ClassManager: React.FC<ClassManagerProps> = ({
         </div>
       )}
 
-      {/* ========== بنر محدودیت‌ها ========== */}
-      <div className="class-limits-banner">
-        <div className="limit-item">
-          <span>📚 کلاس‌های فعال: {currentClasses} / {maxClasses}</span>
-          {!canCreateClass && <span className="limit-full">⛔ سقف کلاس‌ها کامل شده</span>}
-        </div>
-        <div className="limit-item">
-          <span>👥 حداکثر دانش‌آموز در هر کلاس: {maxStudentsPerClass} نفر</span>
-        </div>
-        <button 
-          className="upgrade-btn"
-          onClick={() => window.location.href = '/dashboard/subscription'}
-        >
-          ارتقا اشتراک
-        </button>
-      </div>
-
       {/* ========== مودال تأیید حذف دانش‌آموز ========== */}
       {showRemoveConfirm && (
         <div className="modal-overlay" onClick={() => setShowRemoveConfirm(null)}>

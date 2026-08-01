@@ -1,7 +1,7 @@
 // components/ConfigurationForm.tsx
 import React, { useState } from 'react';
 import type { ExamConfig, ExamType, Difficulty } from '../types';
-import { FileText, Settings, User, Book, Hash, BarChart3, Clock, Edit3, AlertCircle } from 'lucide-react';
+import { FileText, Settings, User, Book, Hash, BarChart3, Clock, Edit3 } from 'lucide-react';
 import '../styles/exam-config.css';
 
 interface Props {
@@ -158,36 +158,8 @@ const ConfigurationForm: React.FC<Props> = ({
       <div className="exam-config-card">
         <h2 className="exam-config-title">آزمون ساز هوشمند</h2>
         <p className="exam-config-subtitle">تنظیمات آزمون خود را مشخص کنید</p>
-        
-        {/* نمایش محدودیت‌ها */}
-        <div className="exam-limits-bar">
-          <div className="limit-item">
-            <span>📊 آزمون باقی‌مانده: {remainingExams} از {maxExams}</span>
-            {isExamLimitReached && <span className="limit-full">⛔ کامل شده</span>}
-          </div>
-          <div className="limit-item">
-            <span>📝 حداکثر سوال: {maxQuestions}</span>
-          </div>
-          <div className="limit-item">
-            <span>💾 حداکثر حجم فایل: {maxFileSize} MB</span>
-          </div>
-        </div>
 
         {error && <div className="exam-config-error">{error}</div>}
-
-        {/* هشدار محدودیت */}
-        {isExamLimitReached && (
-          <div className="exam-limit-banner">
-            <AlertCircle size={20} />
-            <span>
-              ⚠️ سقف {maxExams} آزمون ماهانه شما کامل شده است. 
-              برای ساخت آزمون جدید، اشتراک خود را ارتقا دهید.
-            </span>
-            <button onClick={() => window.location.href = '/dashboard/subscription'}>
-              ارتقا اشتراک
-            </button>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div className="exam-config-section">
@@ -376,59 +348,12 @@ const ConfigurationForm: React.FC<Props> = ({
           to { transform: rotate(360deg); }
         }
 
-        .exam-limits-bar {
-          display: flex;
-          gap: 20px;
-          padding: 12px 16px;
-          background: #f8fafc;
-          border-radius: 12px;
-          margin-bottom: 16px;
-          flex-wrap: wrap;
-          border: 1px solid #e2e8f0;
-        }
 
-        .limit-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 0.85rem;
-          color: #475569;
-        }
-
-        .limit-full {
-          color: #ef4444;
-          font-weight: 700;
-        }
-
-        .exam-limit-banner {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          background: #fef2f2;
-          border: 1px solid #fecaca;
-          border-radius: 12px;
-          margin-bottom: 16px;
-          color: #991b1b;
-          flex-wrap: wrap;
-        }
-
-        .exam-limit-banner button {
-          background: #ef4444;
-          color: white;
-          border: none;
-          padding: 6px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.8rem;
-          font-weight: 500;
-          margin-right: auto;
-        }
-
-        .exam-limit-banner button:hover {
-          background: #dc2626;
-        }
-
+        
+        
+        
+        
+        
         .exam-config-submit-btn.disabled {
           background: #94a3b8;
           cursor: not-allowed;
@@ -442,17 +367,7 @@ const ConfigurationForm: React.FC<Props> = ({
         }
 
         @media (max-width: 768px) {
-          .exam-limits-bar {
-            flex-direction: column;
-            gap: 8px;
-          }
-          .exam-limit-banner {
-            flex-direction: column;
-            text-align: center;
-          }
-          .exam-limit-banner button {
-            margin-right: 0;
-          }
+          .exam-config-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>

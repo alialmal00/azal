@@ -398,8 +398,8 @@ const Landing = () => {
           align-items: center;
           justify-content: center;
           z-index: 9999;
-          animation: splashFadeOut 0.6s ease-in-out forwards;
-          animation-delay: 0.4s;
+          animation: splashFadeOut 0.3s ease-in-out forwards;
+          animation-delay: 0.1s;
         }
 
         @keyframes splashFadeOut {
@@ -425,8 +425,8 @@ const Landing = () => {
         }
         .splash-logo img { height: 50px; width: auto; }
         .splash-logo span {
-          font-size: 2rem;
-          font-weight: 800;
+          font-size: 1.2rem;
+          font-weight: 700;
           color: white;
           text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }

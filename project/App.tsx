@@ -19,6 +19,7 @@ import NotificationBell from './components/NotificationBell';
 import SubscriptionPage from './pages/dashboard/SubscriptionPage';
 import BillingPage from './pages/dashboard/BillingPage';
 import { AuthContext } from './index';
+import { useEntitlements } from './context/EntitlementsContext';
 import api from './services/api';
 import {
   FiUser, FiUsers, FiHome, FiLogOut, FiMenu, FiX,
@@ -34,6 +35,9 @@ import logoImg from './assets/images/logo.png';
 
 const App: React.FC = () => {
   const { user, isAuthenticated, logout, checkAuth } = useContext(AuthContext);
+  // 🏛️ Entitlements مرکزی — منبع واحد محدودیت‌ها (بدون Hard-code محلی)
+  const { entitlements, legacy: entLegacy, can: entCan, refresh: refreshEntitlements } = useEntitlements();
+  const [renewalBannerDismissed, setRenewalBannerDismissed] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
   // User state
@@ -78,6 +82,9 @@ const App: React.FC = () => {
   const [subscription, setSubscription] = useState<any>(null);
   const [usage, setUsage] = useState<any>(null);
   const [userLimits, setUserLimits] = useState<any>(null);
+  const subscriptionDataLoadedRef = useRef(false);
+  const authVerifiedRef = useRef(false);
+  const statsLoadedRef = useRef(false);
 
   // Dashboard stats
   const [dashboardStats, setDashboardStats] = useState({
@@ -101,10 +108,12 @@ const App: React.FC = () => {
 
   // ========== بررسی احراز هویت ==========
   useEffect(() => {
+    if (authVerifiedRef.current) return;
     const verifyAuth = async () => {
       console.log('🔍 App: Verifying authentication...');
       await checkAuth();
       setAuthChecked(true);
+      authVerifiedRef.current = true;
     };
     verifyAuth();
   }, [checkAuth]);
@@ -142,26 +151,23 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // ========== همگام‌سازی با Entitlements مرکزی ==========
+  // userLimits از Context تغذیه می‌شود؛ این تابع فقط آن را تازه می‌کند
   const loadUserLimits = useCallback(async () => {
-    try {
-      const response = await api.get('/subscription/limits');
-      if (response?.data?.success && response?.data?.data) {
-        const data = response.data.data;
-        setUserLimits(data);
-        console.log('📊 User limits loaded:', data);
-      } else {
-        console.warn('⚠️ User limits not available');
-        setUserLimits(null);
-      }
-    } catch (err: any) {
-      console.warn('⚠️ Error loading limits:', err?.response?.status || err?.message);
-      setUserLimits(null);
+    await refreshEntitlements();
+  }, [refreshEntitlements]);
+
+  useEffect(() => {
+    if (entLegacy) {
+      setUserLimits(entLegacy);
+      console.log('📊 Entitlements synced (central):', entLegacy.plan?.name);
     }
-  }, []);
+  }, [entLegacy]);
 
   // ========== فراخوانی اشتراک و محدودیت‌ها فقط یک‌بار پس از احراز هویت ==========
   useEffect(() => {
-    if (authChecked && isAuthenticated && user) {
+    if (authChecked && isAuthenticated && user && !subscriptionDataLoadedRef.current) {
+      subscriptionDataLoadedRef.current = true;
       loadSubscriptionData();
       loadUserLimits();
     }
@@ -206,9 +212,11 @@ const App: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (user && user.role_selected) {
-      loadDashboardStats();
+    if (!user || !user.role_selected || statsLoadedRef.current) {
+      return;
     }
+    statsLoadedRef.current = true;
+    loadDashboardStats();
   }, [user, loadDashboardStats]);
 
   const refreshStats = useCallback(() => {
@@ -284,6 +292,8 @@ const App: React.FC = () => {
     setTimeSpent(spentTime);
     setAppState('results');
     setTimeout(() => refreshStats(), 1000);
+    // 🔄 تازه‌سازی مصرف بعد از اتمام آزمون (همگام با سرور)
+    setTimeout(() => loadUserLimits(), 1200);
   };
 
   const handleRestart = () => {
@@ -587,6 +597,7 @@ const App: React.FC = () => {
               onRestart={handleRestart}
               timeSpent={timeSpent}
               examDuration={examConfig.exam_duration}
+              canExportPDF={entCan('pdf_export')}
             />
           );
         }
@@ -687,7 +698,7 @@ const App: React.FC = () => {
                   maxExams: getLimit('max_exams_month', 2),
                   maxQuestions: getLimit('max_questions_exam', 5),
                   maxFileSize: parseFloat(userLimits?.plan?.max_file_size_mb) || 1.5,
-                  examsUsed: userLimits?.usage?.questions_used ?? 0
+                  examsUsed: userLimits?.usage?.exams_used ?? 0  // ✅ قبلاً اشتباهاً questions_used می‌خواند
                 }}
               />
             </div>
@@ -785,6 +796,32 @@ const App: React.FC = () => {
       </header>
 
       {/* Main content */}
+      {/* 🔔 بنر تمدید اشتراک — اشتراک خودکار تمدید نمی‌شود */}
+      {entitlements?.renewal_notice?.show && !renewalBannerDismissed && (
+        <div className="renewal-banner">
+          <div className="renewal-banner-content">
+            <FiClock size={22} className="renewal-banner-icon" />
+            <div className="renewal-banner-text">
+              <strong>اشتراک شما به پایان رسیده است</strong>
+              <span>{entitlements.renewal_notice?.message}</span>
+            </div>
+            <button
+              className="renewal-banner-btn"
+              onClick={() => { closeAllSidePages(); setShowSubscriptionPage(true); }}
+            >
+              تمدید اشتراک
+            </button>
+          </div>
+          <button
+            className="renewal-banner-close"
+            onClick={() => setRenewalBannerDismissed(true)}
+            aria-label="بستن"
+          >
+            <FiX size={18} />
+          </button>
+        </div>
+      )}
+
       <main className="app-main">{renderContent()}</main>
 
       {/* Footer */}
@@ -858,6 +895,35 @@ const App: React.FC = () => {
           justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;
         }
         .app-main { flex: 1; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        /* 🔔 بنر تمدید اشتراک */
+        .renewal-banner {
+          background: linear-gradient(135deg, #fef3c7, #fde68a);
+          border-bottom: 2px solid #f59e0b;
+          padding: 12px 24px;
+          display: flex; align-items: center; justify-content: center; gap: 12px;
+          position: sticky; top: 64px; z-index: 99;
+        }
+        .renewal-banner-content {
+          display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+          justify-content: center; max-width: 1200px;
+        }
+        .renewal-banner-icon { color: #b45309; flex-shrink: 0; }
+        .renewal-banner-text { display: flex; flex-direction: column; gap: 2px; }
+        .renewal-banner-text strong { color: #92400e; font-size: 0.95rem; }
+        .renewal-banner-text span { color: #a16207; font-size: 0.82rem; }
+        .renewal-banner-btn {
+          background: #d97706; color: white; border: none; cursor: pointer;
+          padding: 8px 20px; border-radius: 10px; font-weight: 700; font-size: 0.85rem;
+          font-family: inherit; transition: all 0.2s; white-space: nowrap;
+        }
+        .renewal-banner-btn:hover { background: #b45309; transform: translateY(-1px); }
+        .renewal-banner-close {
+          background: transparent; border: none; cursor: pointer; color: #b45309;
+          padding: 6px; border-radius: 6px; display: flex; align-items: center;
+          position: absolute; left: 16px;
+        }
+        .renewal-banner-close:hover { background: rgba(180, 83, 9, 0.12); }
+        .renewal-banner { position: relative; }
         .welcome-banner {
           background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
           border-radius: 20px; padding: 20px 24px; margin-bottom: 24px;

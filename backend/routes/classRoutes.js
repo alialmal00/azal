@@ -5,7 +5,6 @@ const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 const { checkLimits, checkClassLimit } = require('../middleware/checkLimits');
 const classController = require('../controllers/classController');
 
-console.log('📋 classController loaded:', Object.keys(classController));
 
 // =============================================
 // 🔒 همه مسیرها نیاز به احراز هویت دارند

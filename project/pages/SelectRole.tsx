@@ -14,12 +14,15 @@ const SelectRole = () => {
   const [newRoleName, setNewRoleName] = useState<string>('');
   const [userName, setUserName] = useState('');
   const { user, login, checkAuth } = useContext(AuthContext);
+  const selectRoleLoadDone = React.useRef(false);
 
   useEffect(() => {
+    if (selectRoleLoadDone.current) return;
     const loadUser = async () => {
       try {
         if (user && user.name) {
           setUserName(user.name);
+          selectRoleLoadDone.current = true;
           return;
         }
         
@@ -29,13 +32,16 @@ const SelectRole = () => {
         if (response.data.success && response.data.data?.user) {
           const userData = response.data.data.user;
           setUserName(userData.name || '');
+          selectRoleLoadDone.current = true;
           if (login) {
             login(userData);
           }
         } else {
+          selectRoleLoadDone.current = true;
           window.location.href = '/login';
         }
       } catch (err) {
+        selectRoleLoadDone.current = true;
         console.error('Error loading user:', err);
         window.location.href = '/login';
       }

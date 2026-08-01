@@ -1,7 +1,7 @@
 // controllers/classExamController.js
 const db = require('../config/db');
 const Notification = require('../models/Notification');
-const UsageCounter = require('../models/UsageCounter');
+const subscriptionService = require('../services/subscriptionService');
 
 // ============================================
 // 📝 ایجاد آزمون جدید با بررسی محدودیت‌ها
@@ -16,92 +16,56 @@ const createExam = async (req, res) => {
         console.log('📊 Exam data:', { title, questionCount: exam_data?.questions?.length });
 
         // ============================================
-        // 🔥 ۱. بررسی محدودیت‌های اشتراک معلم
+        // 🔥 ۱. بررسی محدودیت‌ها از طریق سرویس مرکزی
         // ============================================
-        
-        const subscriptionResult = await db.query(`
-            SELECT s.*, p.* 
-            FROM subscriptions s
-            JOIN plans p ON s.plan_id = p.id
-            WHERE s.user_id = $1 AND s.status = 'active' AND s.end_date > NOW()
-            ORDER BY s.end_date DESC
-            LIMIT 1
-        `, [teacherId]);
 
-        let plan = null;
-        let isFree = false;
-
-        if (subscriptionResult.rows.length === 0) {
-            isFree = true;
-            const freePlan = await db.query(`
-                SELECT * FROM plans 
-                WHERE panel_type = 'teacher' AND name = 'رایگان' AND is_active = true
-            `);
-            plan = freePlan.rows[0];
-        } else {
-            plan = subscriptionResult.rows[0];
-        }
-
-        if (!plan) {
+        const ent = await subscriptionService.getEntitlements(teacherId, 'teacher');
+        if (!ent.plan) {
             return res.status(403).json({
                 success: false,
-                message: 'هیچ پلنی برای نقش شما تعریف نشده است'
+                message: 'هیچ پلنی برای نقش شما تعریف نشده است',
+                redirect: '/dashboard/subscription'
             });
         }
 
-        console.log(`📊 Plan: ${plan.name}, max_exams_month: ${plan.max_exams_month}, max_questions_exam: ${plan.max_questions_exam}`);
+        const examFeat = ent.features.exam_generation;
+        const qCapFeat = ent.features.exam_questions_per_exam;
+        console.log(`📊 Plan: ${ent.plan.name}, exams: ${examFeat?.used}/${examFeat?.limit}, q/exam cap: ${qCapFeat?.limit}`);
 
-        // ============================================
-        // 📊 ۲. بررسی مصرف ماهانه معلم
-        // ============================================
-        
-        const usage = await UsageCounter.getCurrentUsage(teacherId);
-        const maxExamsPerMonth = plan.max_exams_month || 2;
-        const maxQuestionsPerExam = plan.max_questions_exam || 5;
-        const maxTotalQuestions = maxExamsPerMonth * maxQuestionsPerExam;
-
-        console.log(`📊 Exams used this month: ${usage.exams_used}/${maxExamsPerMonth}`);
-        console.log(`📊 Questions used this month: ${usage.questions_used}/${maxTotalQuestions}`);
-
-        // بررسی محدودیت تعداد آزمون
-        if (usage.exams_used >= maxExamsPerMonth) {
+        // سقف سوال در هر آزمون
+        const numQuestions = exam_data?.questions?.length || 0;
+        if (qCapFeat && qCapFeat.is_enabled && qCapFeat.limit !== null && numQuestions > qCapFeat.limit) {
             return res.status(429).json({
                 success: false,
-                message: `سقف ${maxExamsPerMonth} آزمون ماهانه شما کامل شده است.`,
+                message: `حداکثر ${qCapFeat.limit} سوال در هر آزمون مجاز است.`,
+                error: 'QUESTION_LIMIT_EXCEEDED',
+                limit: { max: qCapFeat.limit, requested: numQuestions }
+            });
+        }
+
+        // سقف حجم متن/فایل منبع (اگر در config ارسال شده باشد)
+        const sourceText = config?.source_text || '';
+        if (sourceText) {
+            const sizeMB = Buffer.byteLength(String(sourceText), 'utf8') / (1024 * 1024);
+            const fileCheck = await subscriptionService.checkLimit(teacherId, 'file_upload_size', { capValue: sizeMB });
+            if (!fileCheck.allowed) {
+                return res.status(429).json({
+                    success: false,
+                    message: `حجم فایل منبع بیش از حد مجاز پلن شما است (حداکثر ${fileCheck.limit} مگابایت).`,
+                    error: 'FILE_SIZE_EXCEEDED',
+                    limit: { max: fileCheck.limit, requested: sizeMB.toFixed(2) }
+                });
+            }
+        }
+
+        // سقف آزمون ماهانه
+        if (examFeat && examFeat.is_enabled && examFeat.limit !== null && examFeat.used >= examFeat.limit) {
+            return res.status(429).json({
+                success: false,
+                message: `سقف ${examFeat.limit} آزمون ماهانه شما کامل شده است.`,
                 redirect: '/dashboard/subscription',
                 error: 'EXAM_LIMIT_REACHED',
-                limit: {
-                    used: usage.exams_used,
-                    max: maxExamsPerMonth
-                }
-            });
-        }
-
-        // ============================================
-        // 📝 ۳. بررسی تعداد سوالات
-        // ============================================
-        
-        const numQuestions = exam_data?.questions?.length || 0;
-
-        console.log(`📝 Questions: ${numQuestions}/${maxQuestionsPerExam}`);
-
-        if (numQuestions > maxQuestionsPerExam) {
-            return res.status(429).json({
-                success: false,
-                message: `حداکثر ${maxQuestionsPerExam} سوال در هر آزمون مجاز است.`,
-                error: 'QUESTION_LIMIT_EXCEEDED'
-            });
-        }
-
-        // بررسی محدودیت مجموع سوالات
-        if (usage.questions_used + numQuestions > maxTotalQuestions) {
-            const remaining = maxTotalQuestions - usage.questions_used;
-            return res.status(429).json({
-                success: false,
-                message: `شما فقط ${remaining} سوال دیگر در این ماه مجاز هستید.`,
-                redirect: '/dashboard/subscription',
-                error: 'TOTAL_QUESTION_LIMIT_REACHED',
-                remaining: remaining
+                limit: { used: examFeat.used, max: examFeat.limit }
             });
         }
 
@@ -123,8 +87,14 @@ const createExam = async (req, res) => {
         }
 
         // ذخیره آزمون در دیتابیس
+        // ⚠️ source_text فقط برای enforce سقف حجم (بالا) ارسال می‌شود؛
+        // قبل از ذخیره حذفش می‌کنیم تا رکورد کلاس با متن منبع سنگین نشود
+        const configToStore = config ? { ...config } : null;
+        if (configToStore && configToStore.source_text !== undefined) {
+            delete configToStore.source_text;
+        }
         const examDataString = JSON.stringify(exam_data);
-        const configString = config ? JSON.stringify(config) : null;
+        const configString = configToStore ? JSON.stringify(configToStore) : null;
 
         const query = `
             INSERT INTO class_exams (class_id, teacher_id, title, description, exam_data, config, status, created_at)
@@ -139,19 +109,31 @@ const createExam = async (req, res) => {
         console.log(`✅ Exam created successfully: ${exam.id}`);
 
         // ============================================
-        // 🔹 ۵. افزایش شمارنده‌های مصرف بعد از ایجاد آزمون
+        // 🔹 ۵. مصرف سهمیه — اتمیک از طریق سرویس مرکزی
         // ============================================
-        
-        // ۱. افزایش تعداد آزمون‌های ماهانه
-        await UsageCounter.incrementExamUsage(teacherId);
-        
-        // ۲. افزایش تعداد سوالات مصرف‌شده
-        if (numQuestions > 0) {
-            await UsageCounter.incrementQuestionUsage(teacherId, numQuestions);
+        let consumed = null;
+        try {
+            consumed = await subscriptionService.consumeExam(teacherId, numQuestions);
+        } catch (consumeError) {
+            // اگر مصرف سهمیه شکست خورد، آزمون ساخته‌شده را پاک کن تا سیستم Sync بماند
+            await db.query('DELETE FROM class_exams WHERE id = $1', [exam.id]);
+            throw consumeError;
         }
 
-        // دریافت مجدد مصرف برای نمایش در پاسخ
-        const updatedUsage = await UsageCounter.getCurrentUsage(teacherId);
+        if (consumed && !consumed.allowed) {
+            // Race نادر: سهمیه بین بررسی و مصرف پر شده
+            await db.query('DELETE FROM class_exams WHERE id = $1', [exam.id]);
+            return res.status(429).json({
+                success: false,
+                message: consumed.message,
+                redirect: '/dashboard/subscription',
+                error: 'EXAM_LIMIT_REACHED',
+                limit: { used: consumed.used, max: consumed.limit }
+            });
+        }
+
+        const updatedUsage = await subscriptionService.getUsage(teacherId);
+        const maxExamsPerMonth = examFeat?.limit ?? null;
 
         res.status(201).json({
             success: true,
@@ -167,9 +149,9 @@ const createExam = async (req, res) => {
                     exams_used: updatedUsage.exams_used,
                     max_exams: maxExamsPerMonth,
                     questions_used: updatedUsage.questions_used,
-                    max_questions: maxTotalQuestions,
-                    exams_remaining: Math.max(0, maxExamsPerMonth - updatedUsage.exams_used),
-                    questions_remaining: Math.max(0, maxTotalQuestions - updatedUsage.questions_used)
+                    exams_remaining: maxExamsPerMonth !== null
+                        ? Math.max(0, maxExamsPerMonth - updatedUsage.exams_used)
+                        : null
                 }
             }
         });
@@ -185,53 +167,48 @@ const createExam = async (req, res) => {
 };
 
 // ============================================
-// 📊 دریافت محدودیت‌های آزمون معلم
+// 📊 دریافت محدودیت‌های آزمون معلم (از سرویس مرکزی)
 // ============================================
 const getTeacherExamLimits = async (req, res) => {
     try {
         const teacherId = req.user.id;
-        
-        // دریافت اشتراک
-        const subscriptionResult = await db.query(`
-            SELECT s.*, p.* 
-            FROM subscriptions s
-            JOIN plans p ON s.plan_id = p.id
-            WHERE s.user_id = $1 AND s.status = 'active' AND s.end_date > NOW()
-            ORDER BY s.end_date DESC
-            LIMIT 1
-        `, [teacherId]);
 
-        let plan = null;
-        if (subscriptionResult.rows.length === 0) {
-            const freePlan = await db.query(`
-                SELECT * FROM plans 
-                WHERE panel_type = 'teacher' AND name = 'رایگان' AND is_active = true
-            `);
-            plan = freePlan.rows[0];
-        } else {
-            plan = subscriptionResult.rows[0];
+        const ent = await subscriptionService.getEntitlements(teacherId, 'teacher');
+        if (!ent.plan) {
+            return res.status(404).json({
+                success: false,
+                message: 'هیچ پلنی برای نقش شما تعریف نشده است'
+            });
         }
 
-        // محاسبه مصرف ماهانه
-        const usage = await UsageCounter.getCurrentUsage(teacherId);
-        const maxExams = plan?.max_exams_month || 2;
-        const maxQuestionsPerExam = plan?.max_questions_exam || 5;
-        const maxTotalQuestions = maxExams * maxQuestionsPerExam;
+        const examFeat = ent.features.exam_generation;
+        const qCapFeat = ent.features.exam_questions_per_exam;
+
+        const maxExams = examFeat?.limit ?? null;
+        const maxQPerExam = qCapFeat?.limit ?? null;
+        const examsUsed = examFeat?.used ?? 0;
+        const questionsUsed = ent.usage.questions_used;
+        // 🔄 سقف اشتراک: بین آزمون‌ساز داشبورد و آزمون‌ساز کلاسی «مشترک» است
+        // (هر دو از یک شمارنده exams_used / questions_used تغذیه می‌شوند)
 
         res.json({
             success: true,
             data: {
                 plan: {
-                    name: plan?.name || 'رایگان',
+                    name: ent.plan.name,
                     max_exams_month: maxExams,
-                    max_questions_exam: maxQuestionsPerExam,
-                    max_total_questions: maxTotalQuestions
+                    max_questions_exam: maxQPerExam,
+                    max_total_questions: (maxExams || 0) * (maxQPerExam || 0)
                 },
                 usage: {
-                    exams_used: usage.exams_used,
-                    questions_used: usage.questions_used,
-                    exams_remaining: Math.max(0, maxExams - usage.exams_used),
-                    questions_remaining: Math.max(0, maxTotalQuestions - usage.questions_used)
+                    exams_used: examsUsed,
+                    questions_used: questionsUsed,
+                    max_exams: maxExams,
+                    max_questions: maxQPerExam,
+                    exams_remaining: maxExams !== null ? Math.max(0, maxExams - examsUsed) : null,
+                    questions_remaining: (maxExams || 0) * (maxQPerExam || 0) > 0
+                        ? Math.max(0, (maxExams * maxQPerExam) - questionsUsed)
+                        : null
                 }
             }
         });
